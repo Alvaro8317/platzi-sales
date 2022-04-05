@@ -1,28 +1,28 @@
 import csv
 import codecs
 import sys
-clients = ""
+clients = ['Pablo','Ricardo']
 clients_file = 'list_clients.csv'
 
 
-def readaddFile():
-    global clients #Se trae variable clients de todo código
-    with codecs.open(clients_file, 'r','utf-8') as clientswfile:
-        clientsw = csv.reader(clientswfile,delimiter=',')
-        # print(f"Type of clientsw: {type(clientsw)}") Type of clientsw: <class '_csv.reader'>
-        next (clientsw, None)
-        for row in clientsw:
-            clients = clients + row[0] + ', '
+# def readaddFile():
+#     global clients #Se trae variable clients de todo código
+#     with codecs.open(clients_file, 'r','utf-8') as clientswfile:
+#         clientsw = csv.reader(clientswfile,delimiter=',')
+#         # print(f"Type of clientsw: {type(clientsw)}") Type of clientsw: <class '_csv.reader'>
+#         next (clientsw, None)
+#         for row in clientsw:
+#             clients = clients + row[0] + ', '
 
 
 def _get_client_name():
     client_name_inter = None
     while not client_name_inter: #Significa que mientras que no tenga un nombre de cliente, seguirá preguntando
-        client_name_inter = input("Introduce please the name of the client: \n Or write \'exit\' to comeback")
+        client_name_inter = input("Introduce please the name of the client, or write \'exit\' to comeback: ")
         if client_name_inter == 'exit':
             client_name_inter = None
             break
-    if not client_name:
+    if not client_name_inter:
         sys.exit()
     return client_name_inter
 
@@ -32,8 +32,7 @@ def _get_client_name():
 def create_client(client_name):
     global clients # Indica que la variable clients está a nivel global
     if client_name not in clients:
-        clients += client_name
-        _addcomma()
+        clients.append(client_name)
     else:
         print("This client is already in the list of client\'s")
 
@@ -44,15 +43,15 @@ def client_error():
 
 
 def list_clients():
-    global clients
-    clientsshow = clients[:-2]
-    print(f"{clientsshow} \n")
+    for idx, client in enumerate(clients):
+        print(f"ID cliente:{idx}, cliente:{client}")
 
 
 def update_client(client_name,updated_client_name):
     global clients
     if client_name in clients:
-        clients = clients.replace (client_name + ',' , updated_client_name + ',')
+        index=clients.index(client_name)
+        clients[index] = updated_client_name
     else:
         client_error()
 
@@ -60,24 +59,18 @@ def update_client(client_name,updated_client_name):
 def delete_client(client_name):
     global clients
     if client_name in clients:
-        clients = clients.replace (client_name + ',' , "")
+        clients.remove(client_name)
     else:
         client_error()
 
 
 def search_client(client_name):
     global clients
-    clients_list = clients.split(', ')
-    for cliente in clients_list:
+    for cliente in clients:
         if cliente != client_name:
             continue # Indica "No ejecutes nada más dentro de esta iteración, ve a la siguiente" Break sale de la iteración
         else:
             return True
-
-
-def _addcomma():
-    global clients
-    clients += ', '
 
 
 def _print_welcome():
@@ -92,7 +85,7 @@ def _print_welcome():
     print('[S]earch client')
     print('Or please, write \'exit\' to break the program \n')
 
-readaddFile()
+# readaddFile()
 
 while True:
 
