@@ -1,6 +1,4 @@
-from multiprocessing.spawn import get_command_line
 import sys
-from unittest import result
 clients = [
     {
         'Name':'Pablo',
@@ -72,15 +70,12 @@ def get_id(name):
 
 def update_client(idx,updated_client_name):
     global clients
-    clients[idx] = updated_client_name["Name"]
+    clients[idx] = updated_client_name
 
 
-def delete_client(client_name):
+def delete_client(idx):
     global clients
-    if client_name in clients:
-        clients.remove(client_name)
-    else:
-        client_error()
+    clients.remove[idx]
 
 
 def search_client(client_name):
@@ -96,9 +91,10 @@ def search_id(client_name):
     global clients
     for idx, client in enumerate(clients):
         if client['Name'] != client_name:
-            client_error() # Indica "No ejecutes nada más dentro de esta iteración, ve a la siguiente" Break sale de la iteración
+            continue
         else:
             return idx
+    client_error()
 
 
 def _print_welcome():
@@ -133,14 +129,29 @@ while True:
         elif command == 'R':
             list_clients()
         elif command == 'U':
-            client_name = _get_client_field('Name')
-            updated_client_name = input('What is the updated client name? ')
-            update_client (client_name, updated_client_name)
-            # Primero escribir el código y después implementar la función
-            list_clients()
+            trysearch = _get_client_field('Name')
+            trysearch = search_id(trysearch)
+            if trysearch == None:
+                print("Can not continue, does not exist that client")
+                continue
+            else:
+                print("Now, please insert the information updated")
+                clientupdate = {
+                'Name': _get_client_field('Name'),
+                'Company': _get_client_field('Company'),
+                'Email': _get_client_field('Email'),
+                'Position': _get_client_field('Position')
+                }
+                update_client(trysearch,clientupdate)
+                list_clients()
         elif command == 'D':
-            client_name = _get_client_name()
-            delete_client(client_name)
+            trysearch = _get_client_field('Name')
+            trysearch = int(search_id(trysearch))
+            if trysearch == None:
+                print("Can not continue, does not exist that client")
+                continue
+            else:
+                delete_client(trysearch)
             list_clients()
         elif command == 'S':
             client_name = _get_client_field('Name')
@@ -152,9 +163,7 @@ while True:
         elif command == 'EXIT':
             sys.exit()
         elif command == 'TEST':
-            trysearch = _get_client_field('Name')
-            trysearch = search_id(trysearch)
-            print(trysearch)
+            print(len(clients))
         else:
             print("Invalid command")
         # list_clients()
