@@ -1,7 +1,20 @@
-import csv
-import codecs
+from multiprocessing.spawn import get_command_line
 import sys
-clients = ['Pablo','Ricardo']
+from unittest import result
+clients = [
+    {
+        'Name':'Pablo',
+        'Company':'PrimeStone',
+        'Email':'Pablo@primestone.com',
+        'Position':'Protocols'
+    },
+    {
+        'Name':'Ricardo',
+        'Company':'Google',
+        'Email':'Ricardito@google.com',
+        'Position':'Software Engineer'
+    }
+]
 clients_file = 'list_clients.csv'
 
 
@@ -13,6 +26,12 @@ clients_file = 'list_clients.csv'
 #         next (clientsw, None)
 #         for row in clientsw:
 #             clients = clients + row[0] + ', '
+
+def _get_client_field(field_name):
+    fieldd = None
+    while not fieldd:
+        fieldd = input(f'What\'s the client {field_name}? ')
+    return fieldd
 
 
 def _get_client_name():
@@ -27,12 +46,11 @@ def _get_client_name():
     return client_name_inter
 
 
-
-
-def create_client(client_name):
+def create_client(client):
     global clients # Indica que la variable clients está a nivel global
-    if client_name not in clients:
-        clients.append(client_name)
+    print(client)
+    if client not in clients:
+        clients.append(client)
     else:
         print("This client is already in the list of client\'s")
 
@@ -43,17 +61,18 @@ def client_error():
 
 
 def list_clients():
-    for idx, client in enumerate(clients):
-        print(f"ID cliente:{idx}, cliente:{client}")
+    for idx, client in enumerate(clients): #La función enumerate brinda un conteo que para este caso es idx
+        print(f"ID: {idx} | Nombre: {client['Name']} | Compañía: {client['Company']} | Correo: {client['Email']} | Posición: {client['Position']}")
+
+def get_id(name):
+    for i in clients:
+        if name in i:
+            print(i)
 
 
-def update_client(client_name,updated_client_name):
+def update_client(idx,updated_client_name):
     global clients
-    if client_name in clients:
-        index=clients.index(client_name)
-        clients[index] = updated_client_name
-    else:
-        client_error()
+    clients[idx] = updated_client_name["Name"]
 
 
 def delete_client(client_name):
@@ -66,11 +85,20 @@ def delete_client(client_name):
 
 def search_client(client_name):
     global clients
-    for cliente in clients:
-        if cliente != client_name:
+    for client in clients:
+        if client['Name'] != client_name:
             continue # Indica "No ejecutes nada más dentro de esta iteración, ve a la siguiente" Break sale de la iteración
         else:
             return True
+
+
+def search_id(client_name):
+    global clients
+    for idx, client in enumerate(clients):
+        if client['Name'] != client_name:
+            client_error() # Indica "No ejecutes nada más dentro de esta iteración, ve a la siguiente" Break sale de la iteración
+        else:
+            return idx
 
 
 def _print_welcome():
@@ -94,13 +122,18 @@ while True:
         command = input("").upper()
         print("\n")
         if command == 'C':
-            client_name = _get_client_name()
-            create_client(client_name)
+            clientnew = {
+                'Name': _get_client_field('Name'),
+                'Company': _get_client_field('Company'),
+                'Email': _get_client_field('Email'),
+                'Position': _get_client_field('Position')
+            }
+            create_client(clientnew)
             list_clients()
         elif command == 'R':
             list_clients()
         elif command == 'U':
-            client_name = _get_client_name()
+            client_name = _get_client_field('Name')
             updated_client_name = input('What is the updated client name? ')
             update_client (client_name, updated_client_name)
             # Primero escribir el código y después implementar la función
@@ -110,7 +143,7 @@ while True:
             delete_client(client_name)
             list_clients()
         elif command == 'S':
-            client_name = _get_client_name()
+            client_name = _get_client_field('Name')
             found = search_client(client_name)            
             if found == True:
                 print("This client exist")
@@ -118,6 +151,10 @@ while True:
                 print("The client: {} is not in our client\'s list".format(client_name)) #Las llaves son un placeHolder son un espacio para dejar nuevos valores posteriormente
         elif command == 'EXIT':
             sys.exit()
+        elif command == 'TEST':
+            trysearch = _get_client_field('Name')
+            trysearch = search_id(trysearch)
+            print(trysearch)
         else:
             print("Invalid command")
         # list_clients()
