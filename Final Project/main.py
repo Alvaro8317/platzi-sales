@@ -75,7 +75,7 @@ def update_client(idx,updated_client_name):
 
 def delete_client(idx):
     global clients
-    clients.remove[idx]
+    clients.pop(idx)
 
 
 def search_client(client_name):
