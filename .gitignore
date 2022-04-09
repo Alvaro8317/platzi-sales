@@ -1,7 +1,5 @@
-<<<<<<< HEAD
 *.pdf
 *.txt
 *.png
-=======
 Fueradegit/
->>>>>>> test
+__pycache__/
