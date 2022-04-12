@@ -1,20 +1,11 @@
+import csv
 import sys
-clients = [
-    {
-        'Name':'Pablo',
-        'Company':'PrimeStone',
-        'Email':'Pablo@primestone.com',
-        'Position':'Protocols'
-    },
-    {
-        'Name':'Ricardo',
-        'Company':'Google',
-        'Email':'Ricardito@google.com',
-        'Position':'Software Engineer'
-    }
-]
-clients_file = 'list_clients.csv'
+import os
+import codecs
 
+clients_file = '.list_clients.csv' #El punto al principio indica que es un archivo oculto
+clients_schema = ['Name', 'Company','Email','Position']
+clients = []
 
 # def readaddFile():
 #     global clients #Se trae variable clients de todo código
@@ -25,23 +16,28 @@ clients_file = 'list_clients.csv'
 #         for row in clientsw:
 #             clients = clients + row[0] + ', '
 
+def _initialize_clients_from_storage():
+    with codecs.open(clients_file,'r','utf-8') as file_r:
+        reader = csv.DictReader(file_r, fieldnames=clients_schema) # Es una lista de las llaves que utilizará dictreader para construir los diccionarios
+        for row in reader:
+            clients.append(row)
+
+
+def _save_client_storage():
+    tmp_table = f'{clients_file}.tmp' #Se llevan los clientes a una tabla temporal porque una vez que se abre el archivo, no se puede escribirlo
+    with codecs.open(tmp_table,'w', 'utf-8') as file_w:
+        writer = csv.DictWriter(file_w, fieldnames=clients_schema)
+        writer.writerows(clients)
+    os.remove(clients_file)
+    os.rename(tmp_table, clients_file)
+
+
 def _get_client_field(field_name):
     fieldd = None
     while not fieldd:
         fieldd = input(f'What\'s the client {field_name}? ')
     return fieldd
 
-
-def _get_client_name():
-    client_name_inter = None
-    while not client_name_inter: #Significa que mientras que no tenga un nombre de cliente, seguirá preguntando
-        client_name_inter = input("Introduce please the name of the client, or write \'exit\' to comeback: ")
-        if client_name_inter == 'exit':
-            client_name_inter = None
-            break
-    if not client_name_inter:
-        sys.exit()
-    return client_name_inter
 
 
 def create_client(client):
@@ -110,7 +106,7 @@ def _print_welcome():
     print('Or please, write \'exit\' to break the program \n')
 
 # readaddFile()
-
+_initialize_clients_from_storage()
 while True:
 
     if __name__ == '__main__':
@@ -125,7 +121,7 @@ while True:
                 'Position': _get_client_field('Position')
             }
             create_client(clientnew)
-            list_clients()
+            _save_client_storage()
         elif command == 'R':
             list_clients()
         elif command == 'U':
@@ -143,7 +139,7 @@ while True:
                 'Position': _get_client_field('Position')
                 }
                 update_client(trysearch,clientupdate)
-                list_clients()
+                _save_client_storage()
         elif command == 'D':
             trysearch = _get_client_field('Name')
             trysearch = int(search_id(trysearch))
@@ -152,7 +148,7 @@ while True:
                 continue
             else:
                 delete_client(trysearch)
-            list_clients()
+                _save_client_storage()
         elif command == 'S':
             client_name = _get_client_field('Name')
             found = search_client(client_name)            
@@ -166,5 +162,4 @@ while True:
             print(len(clients))
         else:
             print("Invalid command")
-        # list_clients()
-        # create_client('Alvaro')
+        
